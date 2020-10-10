@@ -1,18 +1,6 @@
-#define ADA
-/* #define NEO */
-
-#ifdef ADA
 #include <Adafruit_NeoPixel.h>
 #ifdef __AVR__
 #include <avr/power.h>
-#endif
-#endif
-
-#ifdef NEO
-#include <NeoPixelBrightnessBus.h>
-#include <NeoPixelSegmentBus.h>
-#include <NeoPixelBus.h>
-#include <NeoPixelAnimator.h>
 #endif
 
 #include <ESP8266WiFi.h>
@@ -31,12 +19,7 @@ static const char password[] = WIFI_PASSWORD;
 
 MDNSResponder mdns;
 ESP8266WiFiMulti WiFiMulti;
-#ifdef ADA
 Adafruit_NeoPixel pixels(1, OUTPIN0);
-#endif
-#ifdef NEO
-NeoPixelBus<NeoGrbFeature, Neo400KbpsMethod> strip(1, OUTPIN0);
-#endif
 
 void setup() {
 #if defined(__AVR_ATtiny85__) && (F_CPU == 16000000)
@@ -46,12 +29,8 @@ void setup() {
     // PIN setup
     pinMode(OUTPIN0, OUTPUT);
     digitalWrite(OUTPIN0, 0);
-#ifdef ADA
+
     pixels.begin();
-#endif
-#ifdef NEO
-    strip.Begin();
-#endif
 
     Serial.begin(115200);
     // Serial.setDebugOutput(true);
@@ -82,15 +61,8 @@ void setup() {
 }
 
 void loop() {
-#ifdef ADA
     pixels.setPixelColor(0, pixels.Color(150, 0, 0));
     pixels.show();
-#endif
-#ifdef NEO
-    RgbColor red(128, 0, 0);
-    strip.SetPixelColor(0, red);
-    trip.Show();
-#endif
     /* digitalWrite(OUTPIN0, 1); */
     delay(1000);
     /* digitalWrite(OUTPIN0, 1); */

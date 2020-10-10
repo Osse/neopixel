@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>NeoPixel LED control</title>
+        <style>
+            body {
+                font-family: Sans-serif;
+                margin: 20px auto 0 auto;
+                padding: 10px;
+                width: 600px;
+                background-color: #dddddd;
+                border: 1px #bbbbbb solid;
+            }
+            div#form_container {
+                margin: auto;
+                width: 300px;
+            }
+
+            label, input {
+                width: 100px;
+                display: inline-block;
+            }
+        </style>
+        <script>
+            function updateValues() {
+                var params = location.search.slice(1).split("&")
+
+                for (p of params) {
+                    var [key, value] = p.split("=");
+
+                    if (key == "red" || key == "green" || key == "blue")
+                        document.getElementById(key).value = parseInt(value);
+                    if (key == "rgb")
+                        document.getElementById(key).value = decodeURIComponent(value);
+                }
+            }
+        </script>
+    </head>
+    <body onload="updateValues();">
+        <h1>NeoPixel LED control</h1>
+        <p>
+            Adjust the color of the
+            <a href="https://www.adafruit.com/product/1938">LED</a> on your own
+            desk!
+        </p>
+
+        <h2>Form</h2>
+
+        <p>Select values between 0 and 255 inclusive, or use the color picker.</p>
+
+        <div id="form_container">
+            <form method="get">
+                <p>
+                    <label for="red">Red:</label>
+                    <input type="range" min="0" max="255" step="1" value="0"
+                        class="slider" id="red" name="red" />
+                </p>
+                <p>
+                    <label for="green">Green:</label>
+                    <input type="range" min="0" max="255" step="1" value="0"
+                        class="slider" id="green" name="green" />
+                </p>
+                <p>
+                    <label for="Blue">Blue:</label>
+                    <input type="range" min="0" max="255" step="1" value="0"
+                        class="slider" id="blue" name="blue" />
+                </p>
+                <p>
+                    <label for="rgb">All at once:</label>
+                    <input type="color" id="rgb" name="rgb" value"#000000" />
+                </p>
+                <p>
+                    <input type="submit" value="Set color!" />
+                </p>
+            </form>
+        </div>
+    </body>
+</html>

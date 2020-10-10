@@ -63,9 +63,6 @@ void setup() {
 void loop() {
     pixels.setPixelColor(0, pixels.Color(150, 0, 0));
     pixels.show();
-    /* digitalWrite(OUTPIN0, 1); */
     delay(1000);
-    /* digitalWrite(OUTPIN0, 1); */
-    /* delay(1000); */
     Serial.println("tick");
 }

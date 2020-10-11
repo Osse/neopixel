@@ -22,23 +22,41 @@
                 width: 100px;
                 display: inline-block;
             }
+            div#chosen_color {
+                width: 200px;
+                height: 25px;
+                background-color: black;
+                border: 1px #bbbbbb solid;
+            }
         </style>
         <script>
-            function updateValues() {
-                var params = location.search.slice(1).split("&")
+            var websock;
 
-                for (p of params) {
-                    var [key, value] = p.split("=");
+            function get(id) {
+                return document.getElementById(id);
+            }
+            
+            function send(id) {
+                websock.send(id + ":" + get(id).value);
+                var newColor = "rgb(" + [get("red").value, get("green").value, get("blue").value].join(",") + ")";
+                get("chosen_color").style.backgroundColor = newColor;
+            }
 
-                    if (key == "red" || key == "green" || key == "blue")
-                        document.getElementById(key).value = parseInt(value);
-                    if (key == "rgb")
-                        document.getElementById(key).value = decodeURIComponent(value);
-                }
+            function start() {
+                websock = new WebSocket('ws://' + window.location.hostname + ':81/');
+                websock.onopen = function(evt) {
+                    console.log('websock open');
+                };
+                websock.onclose = function(evt) {
+                    console.log('websock close');
+                };
+                websock.onerror = function(evt) {
+                    console.log(evt);
+                };
             }
         </script>
     </head>
-    <body onload="updateValues();">
+    <body onload="start();">
         <h1>NeoPixel LED control</h1>
         <p>
             Adjust the color of the
@@ -54,26 +72,25 @@
             <form method="get">
                 <p>
                     <label for="red">Red:</label>
-                    <input type="range" min="0" max="255" step="1" value="0"
+                    <input type="range" min="0" max="255" step="1" value="0" onchange="send('red');"
                         class="slider" id="red" name="red" />
                 </p>
                 <p>
                     <label for="green">Green:</label>
-                    <input type="range" min="0" max="255" step="1" value="0"
+                    <input type="range" min="0" max="255" step="1" value="0" onchange="send('green');"
                         class="slider" id="green" name="green" />
                 </p>
                 <p>
                     <label for="Blue">Blue:</label>
-                    <input type="range" min="0" max="255" step="1" value="0"
+                    <input type="range" min="0" max="255" step="1" value="0" onchange="send('blue');"
                         class="slider" id="blue" name="blue" />
                 </p>
                 <p>
-                    <label for="rgb">All at once:</label>
-                    <input type="color" id="rgb" name="rgb" value"#000000" />
+                    <div id="chosen_color" />
                 </p>
-                <p>
-                    <input type="submit" value="Set color!" />
-                </p>
+                <!-- <p> -->
+                <!--     <input type="button" onclick="send();" value="Set color!" /> -->
+                <!-- </p> -->
             </form>
         </div>
     </body>

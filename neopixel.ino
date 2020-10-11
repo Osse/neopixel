@@ -7,6 +7,7 @@
 // #include <WiFiClient.h> // Already included in ESP8266WiFi.h
 #include <ESP8266WiFiMulti.h>
 #include <ESP8266WebServer.h>
+#include <WebSocketsServer.h>
 #include <Hash.h>
 #include <ESP8266mDNS.h>
 #include <Wire.h>
@@ -30,8 +31,9 @@ static const char password[] = WIFI_PASSWORD;
 
 MDNSResponder mdns;
 ESP8266WiFiMulti WiFiMulti;
-Adafruit_NeoPixel pixels(1, OUTPIN0);
+Adafruit_NeoPixel pixels(2, OUTPIN0);
 ESP8266WebServer server(80);
+WebSocketsServer webSocket(81);
 
 void handleRoot()
 {
@@ -60,6 +62,61 @@ void handleRoot()
     }
 
     server.send_P(200, "text/html", INDEX_HTML);
+}
+
+void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length)
+{
+  Serial.println();
+  Serial.printf("webSocketEvent(%d, %d, ...)\r\n", num, type);
+  
+  switch(type) {
+    case WStype_DISCONNECTED: {
+      Serial.printf("[%u] Disconnected!\r\n", num);
+      break;
+    }
+    case WStype_CONNECTED: {
+      IPAddress ip = webSocket.remoteIP(num);
+      Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\r\n", num, ip[0], ip[1], ip[2], ip[3], payload);
+      break;
+    }
+    case WStype_TEXT: {
+      Serial.printf("[%u] get Text: %s\r\n", num, payload);
+      const char* payload_char = (const char*)payload;
+      char* colon = (char*)memchr(payload_char, ':', length);
+      if (colon != NULL)
+      {
+          size_t pos = colon - payload_char;
+
+          int* led_ptr = NULL;
+          if(!strncmp(payload_char, LED_RED_NAME, pos))
+              led_ptr = &LED_RED;
+          else if(!strncmp(payload_char, LED_GREEN_NAME, pos))
+              led_ptr = &LED_GREEN;
+          else if(!strncmp(payload_char, LED_BLUE_NAME, pos))
+              led_ptr = &LED_BLUE;
+          
+          if (led_ptr != NULL)
+          {
+              int value = atoi(colon + 1);
+              value = max(0, min(255, value));
+              *led_ptr = value;
+              LED_NEW_VALUES = true;
+          }
+      }
+      break;
+    }
+    case WStype_BIN: {
+      Serial.printf("[%u] get binary length: %u\r\n", num, length);
+      hexdump(payload, length);
+      // echo data back to browser
+      webSocket.sendBIN(num, payload, length);
+      break;
+    }
+    default: {
+      Serial.printf("Invalid WStype [%d]\r\n", type);
+      break;
+    }
+  }
 }
 
 void setup()
@@ -99,6 +156,9 @@ void setup()
     server.on("/", handleRoot);
     server.begin();
 
+    webSocket.begin();
+    webSocket.onEvent(webSocketEvent);
+
     // LED is off by default
     pixels.setPixelColor(0, pixels.Color(0, 0, 0));
     pixels.show();
@@ -106,13 +166,16 @@ void setup()
 
 void loop()
 {
+    webSocket.loop();
     server.handleClient();
 
     if (LED_NEW_VALUES)
     {
         // LED_RED and LED_GREEN are intentionally in the wrong order.
         // Not entirely sure why that is the case.
-        pixels.setPixelColor(0, pixels.Color(LED_GREEN, LED_RED, LED_BLUE));
+        auto color = pixels.Color(LED_GREEN, LED_RED, LED_BLUE);
+        pixels.setPixelColor(0, color);
+        pixels.setPixelColor(1, color);
         pixels.show();
         LED_NEW_VALUES = false;
     }

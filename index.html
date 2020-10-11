@@ -22,7 +22,7 @@
                 width: 100px;
                 display: inline-block;
             }
-            div#chosen_color {
+            div#chosen_color_0, div#chosen_color_1  {
                 width: 200px;
                 height: 25px;
                 background-color: black;
@@ -37,9 +37,17 @@
             }
             
             function send(id) {
-                websock.send(id + ":" + get(id).value);
-                var newColor = "rgb(" + [get("red").value, get("green").value, get("blue").value].join(",") + ")";
-                get("chosen_color").style.backgroundColor = newColor;
+                if (websock)
+                    websock.send(id + ":" + get(id).value);
+
+                if (id.endsWith("_0")) {
+                    var newColor = "rgb(" + [get("red_0").value, get("green_0").value, get("blue_0").value].join(",") + ")";
+                    get("chosen_color_0").style.backgroundColor = newColor;
+                }
+                else if (id.endsWith("_1")) {
+                    var newColor = "rgb(" + [get("red_1").value, get("green_1").value, get("blue_1").value].join(",") + ")";
+                    get("chosen_color_1").style.backgroundColor = newColor;
+                }
             }
 
             function start() {
@@ -71,26 +79,42 @@
         <div id="form_container">
             <form method="get">
                 <p>
-                    <label for="red">Red:</label>
-                    <input type="range" min="0" max="255" step="1" value="0" onchange="send('red');"
-                        class="slider" id="red" name="red" />
+                    <label for="red_0">Red:</label>
+                    <input type="range" min="0" max="255" step="1" value="0" onchange="send('red_0');"
+                        class="slider" id="red_0" name="red_0" />
                 </p>
                 <p>
-                    <label for="green">Green:</label>
-                    <input type="range" min="0" max="255" step="1" value="0" onchange="send('green');"
-                        class="slider" id="green" name="green" />
+                    <label for="green_0">Green:</label>
+                    <input type="range" min="0" max="255" step="1" value="0" onchange="send('green_0');"
+                        class="slider" id="green_0" name="green_0" />
                 </p>
                 <p>
                     <label for="Blue">Blue:</label>
-                    <input type="range" min="0" max="255" step="1" value="0" onchange="send('blue');"
-                        class="slider" id="blue" name="blue" />
+                    <input type="range" min="0" max="255" step="1" value="0" onchange="send('blue_0');"
+                        class="slider" id="blue_0" name="blue_0" />
                 </p>
                 <p>
-                    <div id="chosen_color" />
+                    <div id="chosen_color_0"></div>
                 </p>
-                <!-- <p> -->
-                <!--     <input type="button" onclick="send();" value="Set color!" /> -->
-                <!-- </p> -->
+
+                <p>
+                    <label for="red_1">Red:</label>
+                    <input type="range" min="0" max="255" step="1" value="0" onchange="send('red_1');"
+                        class="slider" id="red_1" name="red_1" />
+                </p>
+                <p>
+                    <label for="green_1">Green:</label>
+                    <input type="range" min="0" max="255" step="1" value="0" onchange="send('green_1');"
+                        class="slider" id="green_1" name="green_1" />
+                </p>
+                <p>
+                    <label for="Blue">Blue:</label>
+                    <input type="range" min="0" max="255" step="1" value="0" onchange="send('blue_1');"
+                        class="slider" id="blue_1" name="blue_1" />
+                </p>
+                <p>
+                    <div id="chosen_color_1"></div>
+                </p>
             </form>
         </div>
     </body>

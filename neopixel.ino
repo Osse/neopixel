@@ -16,10 +16,16 @@
 const int OUTPIN0 = 12; // D6   On LoLin NodeMCU V3
 
 // LED color values, names and signal
-int LED_RED, LED_GREEN, LED_BLUE;
-const char LED_RED_NAME[] = "red";
-const char LED_GREEN_NAME[] = "green";
-const char LED_BLUE_NAME[] = "blue";
+int LED_RED_0, LED_GREEN_0, LED_BLUE_0;
+const char LED_RED_NAME_0[] = "red_0";
+const char LED_GREEN_NAME_0[] = "green_0";
+const char LED_BLUE_NAME_0[] = "blue_0";
+
+int LED_RED_1, LED_GREEN_1, LED_BLUE_1;
+const char LED_RED_NAME_1[] = "red_1";
+const char LED_GREEN_NAME_1[] = "green_1";
+const char LED_BLUE_NAME_1[] = "blue_1";
+
 bool LED_NEW_VALUES = false;
 
 // HTML
@@ -37,30 +43,6 @@ WebSocketsServer webSocket(81);
 
 void handleRoot()
 {
-    for (uint8_t i =  0; i < server.args(); i++)
-    {
-        int* led_color = NULL;
-        if (server.argName(i) == LED_RED_NAME)
-            led_color = &LED_RED;
-        if (server.argName(i) == LED_GREEN_NAME)
-            led_color = &LED_GREEN;
-        if (server.argName(i) == LED_BLUE_NAME)
-            led_color = &LED_BLUE;
-
-        if (led_color != NULL)
-        {
-            auto value = server.arg(i).toInt();
-
-            if (value < 0)
-                value = 0;
-            if (value > 255)
-                value = 255;
-
-            LED_NEW_VALUES = true;
-            *led_color = value;
-        }
-    }
-
     server.send_P(200, "text/html", INDEX_HTML);
 }
 
@@ -88,12 +70,19 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
           size_t pos = colon - payload_char;
 
           int* led_ptr = NULL;
-          if(!strncmp(payload_char, LED_RED_NAME, pos))
-              led_ptr = &LED_RED;
-          else if(!strncmp(payload_char, LED_GREEN_NAME, pos))
-              led_ptr = &LED_GREEN;
-          else if(!strncmp(payload_char, LED_BLUE_NAME, pos))
-              led_ptr = &LED_BLUE;
+          if(!strncmp(payload_char, LED_RED_NAME_0, pos))
+              led_ptr = &LED_RED_0;
+          else if(!strncmp(payload_char, LED_GREEN_NAME_0, pos))
+              led_ptr = &LED_GREEN_0;
+          else if(!strncmp(payload_char, LED_BLUE_NAME_0, pos))
+              led_ptr = &LED_BLUE_0;
+
+          if(!strncmp(payload_char, LED_RED_NAME_1, pos))
+              led_ptr = &LED_RED_1;
+          else if(!strncmp(payload_char, LED_GREEN_NAME_1, pos))
+              led_ptr = &LED_GREEN_1;
+          else if(!strncmp(payload_char, LED_BLUE_NAME_1, pos))
+              led_ptr = &LED_BLUE_1;
           
           if (led_ptr != NULL)
           {
@@ -160,7 +149,9 @@ void setup()
     webSocket.onEvent(webSocketEvent);
 
     // LED is off by default
-    pixels.setPixelColor(0, pixels.Color(0, 0, 0));
+    auto black = pixels.Color(0, 0, 0);
+    pixels.setPixelColor(0, black);
+    pixels.setPixelColor(1, black);
     pixels.show();
 }
 
@@ -173,9 +164,8 @@ void loop()
     {
         // LED_RED and LED_GREEN are intentionally in the wrong order.
         // Not entirely sure why that is the case.
-        auto color = pixels.Color(LED_GREEN, LED_RED, LED_BLUE);
-        pixels.setPixelColor(0, color);
-        pixels.setPixelColor(1, color);
+        pixels.setPixelColor(0, pixels.Color(LED_GREEN_0, LED_RED_0, LED_BLUE_0));
+        pixels.setPixelColor(1, pixels.Color(LED_GREEN_1, LED_RED_1, LED_BLUE_1));
         pixels.show();
         LED_NEW_VALUES = false;
     }

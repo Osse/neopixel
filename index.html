@@ -33,6 +33,7 @@
         <script>
             var websock;
             var leds;
+            var timer;
 
             function element(id) {
                 return document.getElementById(id);
@@ -43,8 +44,13 @@
                 var colorArray = [ led.red.value, led.green.value, led.blue.value ];
                 led.color.style.backgroundColor = "rgb(" + colorArray.join(",") + ")";
             }
-            
+
             function send(slider) {
+                clearTimeout(timer);
+                timer = setTimeout(function() { sendLater(slider); }, 50);
+            }
+
+            function sendLater(slider) {
                 var id = slider.id;
                 if (websock)
                     websock.send(id + ":" + element(id).value);

@@ -46,6 +46,20 @@ void handleRoot()
     server.send_P(200, "text/html", INDEX_HTML);
 }
 
+void sendCurrentLedColors(uint8_t num)
+{
+    char payload[100];
+    int length = sprintf(payload, "%s:%d,%s:%d,%s:%d,%s:%d,%s:%d,%s:%d",
+        LED_RED_NAME_0, LED_RED_0,
+        LED_GREEN_NAME_0, LED_GREEN_0,
+        LED_BLUE_NAME_0, LED_BLUE_0,
+        LED_RED_NAME_1, LED_RED_1,
+        LED_GREEN_NAME_1, LED_GREEN_1,
+        LED_BLUE_NAME_1, LED_BLUE_1
+    );
+    webSocket.sendTXT(num, payload, length);
+}
+
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length)
 {
   Serial.println();
@@ -57,6 +71,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
       break;
     }
     case WStype_CONNECTED: {
+      sendCurrentLedColors(num);
       IPAddress ip = webSocket.remoteIP(num);
       Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\r\n", num, ip[0], ip[1], ip[2], ip[3], payload);
       break;

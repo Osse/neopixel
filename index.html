@@ -29,6 +29,10 @@
                 grid-column-gap: 20px;
                 grid-row-gap: 10px;
             }
+
+            #status {
+                font-size: 70%;
+            }
         </style>
         <script>
             var websock;
@@ -57,10 +61,22 @@
                 updateColor(id.slice(-1));
             }
 
+            function handleUpdate(evt) {
+                var kvs = evt.data.split(",");
+                for (kv of kvs) {
+                    [key, value] = kv.split(":");
+                    element(key).value = value;
+                }
+                updateColor(0);
+                updateColor(1);
+                element("status").innerHTML = "Refreshed!";
+            }
+
             function start() {
                 if (window.location.hostname)
                 {
                     websock = new WebSocket('ws://' + window.location.hostname + ':81/');
+                    websock.onmessage = handleUpdate;
                 }
 
                 // Array of objects, each with four members: the sliders and the color div
@@ -110,7 +126,7 @@
             <input type="range" min="0" max="255" step="1" value="0" oninput="send(this);" id="blue_0" />
             <input type="range" min="0" max="255" step="1" value="0" oninput="send(this);" id="blue_1" />
 
-            <span></span>
+            <span id="status">Waiting...</span>
             <div id="color_0"></div>
             <div id="color_1"></div>
         </form>

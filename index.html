@@ -6,61 +6,76 @@
         <title>NeoPixel LED control</title>
         <style>
             body {
-                font-family: Sans-serif;
+                font-family: sans-serif;
                 margin: 20px auto 0 auto;
-                padding: 10px;
+                padding: 20px 10px;
                 width: 600px;
                 background-color: #dddddd;
                 border: 1px #bbbbbb solid;
             }
-            div#form_container {
-                margin: auto;
-                width: 300px;
-            }
 
-            label, input {
-                width: 100px;
-                display: inline-block;
-            }
-            div#chosen_color_0, div#chosen_color_1  {
-                width: 200px;
+            div#color_0, div#color_1  {
                 height: 25px;
                 background-color: black;
                 border: 1px #bbbbbb solid;
             }
+
+            form {
+                margin: auto;
+                width: 500px;
+                display: grid;
+                grid-template-columns: 1fr 3fr 3fr;
+                grid-auto-flow: row;
+                grid-column-gap: 20px;
+                grid-row-gap: 10px;
+            }
         </style>
         <script>
             var websock;
+            var leds;
 
-            function get(id) {
+            function element(id) {
                 return document.getElementById(id);
             }
-            
-            function send(id) {
-                if (websock)
-                    websock.send(id + ":" + get(id).value);
 
-                if (id.endsWith("_0")) {
-                    var newColor = "rgb(" + [get("red_0").value, get("green_0").value, get("blue_0").value].join(",") + ")";
-                    get("chosen_color_0").style.backgroundColor = newColor;
-                }
-                else if (id.endsWith("_1")) {
-                    var newColor = "rgb(" + [get("red_1").value, get("green_1").value, get("blue_1").value].join(",") + ")";
-                    get("chosen_color_1").style.backgroundColor = newColor;
-                }
+            function updateColor(i) {
+                var led = leds[i];
+                var colorArray = [ led.red.value, led.green.value, led.blue.value ];
+                led.color.style.backgroundColor = "rgb(" + colorArray.join(",") + ")";
+            }
+            
+            function send(slider) {
+                var id = slider.id;
+                if (websock)
+                    websock.send(id + ":" + element(id).value);
+                updateColor(id.slice(-1));
             }
 
             function start() {
-                websock = new WebSocket('ws://' + window.location.hostname + ':81/');
-                websock.onopen = function(evt) {
-                    console.log('websock open');
-                };
-                websock.onclose = function(evt) {
-                    console.log('websock close');
-                };
-                websock.onerror = function(evt) {
-                    console.log(evt);
-                };
+                if (window.location.hostname)
+                {
+                    websock = new WebSocket('ws://' + window.location.hostname + ':81/');
+                }
+
+                // Array of objects, each with four members: the sliders and the color div
+                leds = [
+                    {
+                        red: element("red_0"),
+                        green: element("green_0"),
+                        blue: element("blue_0"),
+                        color: element("color_0")
+                    },
+                    {
+                        red: element("red_1"),
+                        green: element("green_1"),
+                        blue: element("blue_1"),
+                        color: element("color_1")
+                    }
+                ];
+
+                // To update the color divs on Refresh
+                updateColor(0);
+                updateColor(1);
             }
         </script>
     </head>
@@ -69,53 +84,29 @@
         <p>
             Adjust the color of the
             <a href="https://www.adafruit.com/product/1938">LED</a> on your own
-            desk!
+            desk! Move the sliders and the LEDs will update automatically.
         </p>
 
-        <h2>Form</h2>
+        <form>
+            <span></span>
+            <label>LED 0:</label>
+            <label>LED 1:</label>
 
-        <p>Select values between 0 and 255 inclusive, or use the color picker.</p>
+            <label>Red:</label>
+            <input type="range" min="0" max="255" step="1" value="0" oninput="send(this);" id="red_0" />
+            <input type="range" min="0" max="255" step="1" value="0" oninput="send(this);" id="red_1" />
 
-        <div id="form_container">
-            <form method="get">
-                <p>
-                    <label for="red_0">Red:</label>
-                    <input type="range" min="0" max="255" step="1" value="0" onchange="send('red_0');"
-                        class="slider" id="red_0" name="red_0" />
-                </p>
-                <p>
-                    <label for="green_0">Green:</label>
-                    <input type="range" min="0" max="255" step="1" value="0" onchange="send('green_0');"
-                        class="slider" id="green_0" name="green_0" />
-                </p>
-                <p>
-                    <label for="Blue">Blue:</label>
-                    <input type="range" min="0" max="255" step="1" value="0" onchange="send('blue_0');"
-                        class="slider" id="blue_0" name="blue_0" />
-                </p>
-                <p>
-                    <div id="chosen_color_0"></div>
-                </p>
+            <label>Green:</label>
+            <input type="range" min="0" max="255" step="1" value="0" oninput="send(this);" id="green_0" />
+            <input type="range" min="0" max="255" step="1" value="0" oninput="send(this);" id="green_1" />
 
-                <p>
-                    <label for="red_1">Red:</label>
-                    <input type="range" min="0" max="255" step="1" value="0" onchange="send('red_1');"
-                        class="slider" id="red_1" name="red_1" />
-                </p>
-                <p>
-                    <label for="green_1">Green:</label>
-                    <input type="range" min="0" max="255" step="1" value="0" onchange="send('green_1');"
-                        class="slider" id="green_1" name="green_1" />
-                </p>
-                <p>
-                    <label for="Blue">Blue:</label>
-                    <input type="range" min="0" max="255" step="1" value="0" onchange="send('blue_1');"
-                        class="slider" id="blue_1" name="blue_1" />
-                </p>
-                <p>
-                    <div id="chosen_color_1"></div>
-                </p>
-            </form>
-        </div>
+            <label>Blue:</label>
+            <input type="range" min="0" max="255" step="1" value="0" oninput="send(this);" id="blue_0" />
+            <input type="range" min="0" max="255" step="1" value="0" oninput="send(this);" id="blue_1" />
+
+            <span></span>
+            <div id="color_0"></div>
+            <div id="color_1"></div>
+        </form>
     </body>
 </html>

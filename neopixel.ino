@@ -32,8 +32,7 @@ bool LED_NEW_VALUES = false;
 extern const char INDEX_HTML[];
 
 // WiFi details
-static const char ssid[] = WIFI_SSID;
-static const char password[] = WIFI_PASSWORD;
+#include "wifi_settings.h"
 
 MDNSResponder mdns;
 ESP8266WiFiMulti WiFiMulti;

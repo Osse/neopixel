@@ -50,11 +50,6 @@
             }
 
             function send(slider) {
-                clearTimeout(timer);
-                timer = setTimeout(function() { sendLater(slider); }, 50);
-            }
-
-            function sendLater(slider) {
                 var id = slider.id;
                 if (websock)
                     websock.send(id + ":" + element(id).value);
@@ -115,16 +110,16 @@
             <label>LED 1:</label>
 
             <label>Red:</label>
-            <input type="range" min="0" max="255" step="1" value="0" oninput="send(this);" id="red_0" />
-            <input type="range" min="0" max="255" step="1" value="0" oninput="send(this);" id="red_1" />
+            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="red_0" />
+            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="red_1" />
 
             <label>Green:</label>
-            <input type="range" min="0" max="255" step="1" value="0" oninput="send(this);" id="green_0" />
-            <input type="range" min="0" max="255" step="1" value="0" oninput="send(this);" id="green_1" />
+            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="green_0" />
+            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="green_1" />
 
             <label>Blue:</label>
-            <input type="range" min="0" max="255" step="1" value="0" oninput="send(this);" id="blue_0" />
-            <input type="range" min="0" max="255" step="1" value="0" oninput="send(this);" id="blue_1" />
+            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="blue_0" />
+            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="blue_1" />
 
             <span id="status">Waiting...</span>
             <div id="color_0"></div>

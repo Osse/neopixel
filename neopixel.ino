@@ -4,11 +4,9 @@
 #endif
 
 #include <ESP8266WiFi.h>
-// #include <WiFiClient.h> // Already included in ESP8266WiFi.h
 #include <ESP8266WiFiMulti.h>
 #include <ESP8266WebServer.h>
 #include <WebSocketsServer.h>
-#include <Hash.h>
 #include <ESP8266mDNS.h>
 #include <Wire.h>
 

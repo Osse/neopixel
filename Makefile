@@ -15,8 +15,11 @@ $(BUILD_DIR)/$(SKETCH_NAME).ino.bin: $(SKETCH_NAME).ino
 $(SKETCH_NAME).ino: html.ino
 	touch $(SKETCH_NAME).ino
 
-html.ino: html.ino.in index.html
-	sed '/^const char INDEX_HTML/r index.html' html.ino.in > html.ino
+html.ino: html.ino.in index.html style.css script.js
+	sed -e '/^const char INDEX_HTML/r index.html' \
+	    -e '/^const char STYLE_CSS/r style.css'   \
+	    -e '/^const char SCRIPT_JS/r script.js'   \
+	    html.ino.in > html.ino
 
 .PHONY: clean upload
 

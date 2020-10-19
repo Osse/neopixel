@@ -1,2 +1,6 @@
 const char INDEX_HTML[] = R"html(
 )html";
+const char STYLE_CSS[] = R"html(
+)html";
+const char SCRIPT_JS[] = R"html(
+)html";

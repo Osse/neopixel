@@ -54,67 +54,68 @@ void sendCurrentLedColors(uint8_t num)
     webSocket.sendTXT(num, payload, length);
 }
 
+void handleLEDUpdate(uint8_t* payload, size_t length)
+{
+    const char* payload_char = (const char*)payload;
+    char* colon = (char*)memchr(payload_char, ':', length);
+    if (colon != NULL)
+    {
+        size_t pos = colon - payload_char;
+
+        int* led_ptr = NULL;
+        if(!strncmp(payload_char, LED_RED_NAME_0, pos))
+            led_ptr = &LED_RED_0;
+        else if(!strncmp(payload_char, LED_GREEN_NAME_0, pos))
+            led_ptr = &LED_GREEN_0;
+        else if(!strncmp(payload_char, LED_BLUE_NAME_0, pos))
+            led_ptr = &LED_BLUE_0;
+
+        if(!strncmp(payload_char, LED_RED_NAME_1, pos))
+            led_ptr = &LED_RED_1;
+        else if(!strncmp(payload_char, LED_GREEN_NAME_1, pos))
+            led_ptr = &LED_GREEN_1;
+        else if(!strncmp(payload_char, LED_BLUE_NAME_1, pos))
+            led_ptr = &LED_BLUE_1;
+
+        if (led_ptr != NULL)
+        {
+            int value = atoi(colon + 1);
+            value = max(0, min(255, value));
+            *led_ptr = value;
+            LED_NEW_VALUES = true;
+        }
+    }
+}
+
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length)
 {
-  Serial.println();
-  Serial.printf("webSocketEvent(%d, %d, ...)\r\n", num, type);
-  
-  switch(type) {
-    case WStype_DISCONNECTED: {
-      Serial.printf("[%u] Disconnected!\r\n", num);
-      break;
-    }
-    case WStype_CONNECTED: {
-      sendCurrentLedColors(num);
-      IPAddress ip = webSocket.remoteIP(num);
-      Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\r\n", num, ip[0], ip[1], ip[2], ip[3], payload);
-      break;
-    }
-    case WStype_TEXT: {
-      Serial.printf("[%u] get Text: %s\r\n", num, payload);
-      const char* payload_char = (const char*)payload;
-      char* colon = (char*)memchr(payload_char, ':', length);
-      if (colon != NULL)
-      {
-          size_t pos = colon - payload_char;
+    Serial.println();
+    Serial.printf("webSocketEvent(%d, %d, ...)\r\n", num, type);
 
-          int* led_ptr = NULL;
-          if(!strncmp(payload_char, LED_RED_NAME_0, pos))
-              led_ptr = &LED_RED_0;
-          else if(!strncmp(payload_char, LED_GREEN_NAME_0, pos))
-              led_ptr = &LED_GREEN_0;
-          else if(!strncmp(payload_char, LED_BLUE_NAME_0, pos))
-              led_ptr = &LED_BLUE_0;
-
-          if(!strncmp(payload_char, LED_RED_NAME_1, pos))
-              led_ptr = &LED_RED_1;
-          else if(!strncmp(payload_char, LED_GREEN_NAME_1, pos))
-              led_ptr = &LED_GREEN_1;
-          else if(!strncmp(payload_char, LED_BLUE_NAME_1, pos))
-              led_ptr = &LED_BLUE_1;
-          
-          if (led_ptr != NULL)
-          {
-              int value = atoi(colon + 1);
-              value = max(0, min(255, value));
-              *led_ptr = value;
-              LED_NEW_VALUES = true;
-          }
-      }
-      break;
+    switch(type) {
+        case WStype_DISCONNECTED:
+            Serial.printf("[%u] Disconnected!\r\n", num);
+            break;
+        case WStype_CONNECTED: {
+            sendCurrentLedColors(num);
+            IPAddress ip = webSocket.remoteIP(num);
+            Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\r\n", num, ip[0], ip[1], ip[2], ip[3], payload);
+            break;
+        }
+        case WStype_TEXT:
+            Serial.printf("[%u] get Text: %s\r\n", num, payload);
+            handleLEDUpdate(payload, length);
+            break;
+        case WStype_BIN:
+            Serial.printf("[%u] get binary length: %u\r\n", num, length);
+            hexdump(payload, length);
+            // echo data back to browser
+            webSocket.sendBIN(num, payload, length);
+            break;
+        default:
+            Serial.printf("Invalid WStype [%d]\r\n", type);
+            break;
     }
-    case WStype_BIN: {
-      Serial.printf("[%u] get binary length: %u\r\n", num, length);
-      hexdump(payload, length);
-      // echo data back to browser
-      webSocket.sendBIN(num, payload, length);
-      break;
-    }
-    default: {
-      Serial.printf("Invalid WStype [%d]\r\n", type);
-      break;
-    }
-  }
 }
 
 void setup()

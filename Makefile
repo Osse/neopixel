@@ -17,6 +17,7 @@ $(SKETCH_NAME).ino: html.ino
 
 html.ino: html.ino.in index.html style.css script.js
 	sed -e '/^const char INDEX_HTML/r index.html' \
+	    -e '/^const char SETTINGS_HTML/r settings.html' \
 	    -e '/^const char STYLE_CSS/r style.css'   \
 	    -e '/^const char SCRIPT_JS/r script.js'   \
 	    html.ino.in > html.ino

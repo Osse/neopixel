@@ -28,6 +28,7 @@ bool LED_NEW_VALUES = false;
 
 // HTML
 extern const char INDEX_HTML[];
+extern const char SETTINGS_HTML[];
 extern const char STYLE_CSS[];
 extern const char SCRIPT_JS[];
 
@@ -153,6 +154,7 @@ void setup()
     Serial.println(WiFi.localIP());
 
     server.on("/", []() { server.send_P(200, "text/html", INDEX_HTML); } );
+    server.on("/settings.html", []() { server.send_P(200, "text/html", SETTINGS_HTML); } );
     server.on("/style.css", []() { server.send_P(200, "text/css", STYLE_CSS); } );
     server.on("/script.js", []() { server.send_P(200, "text/javascript", SCRIPT_JS); } );
     server.begin();

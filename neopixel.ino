@@ -88,6 +88,15 @@ void handleLEDUpdate(uint8_t* payload, size_t length)
     }
 }
 
+void updateLEDs()
+{
+    // LED_RED and LED_GREEN are intentionally in the wrong order.
+    // Not entirely sure why that is the case.
+    pixels.setPixelColor(0, pixels.Color(LED_GREEN_0, LED_RED_0, LED_BLUE_0));
+    pixels.setPixelColor(1, pixels.Color(LED_GREEN_1, LED_RED_1, LED_BLUE_1));
+    pixels.show();
+}
+
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length)
 {
     Serial.println();
@@ -176,11 +185,7 @@ void loop()
 
     if (LED_NEW_VALUES)
     {
-        // LED_RED and LED_GREEN are intentionally in the wrong order.
-        // Not entirely sure why that is the case.
-        pixels.setPixelColor(0, pixels.Color(LED_GREEN_0, LED_RED_0, LED_BLUE_0));
-        pixels.setPixelColor(1, pixels.Color(LED_GREEN_1, LED_RED_1, LED_BLUE_1));
-        pixels.show();
+        updateLEDs();
         LED_NEW_VALUES = false;
     }
 

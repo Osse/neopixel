@@ -9,6 +9,8 @@
 #include <WebSocketsServer.h>
 #include <ESP8266mDNS.h>
 #include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include "Adafruit_BME680.h"
 
 // PIN constants
 const int OUTPIN0 = 12; // D6   On LoLin NodeMCU V3
@@ -25,6 +27,7 @@ const char LED_GREEN_NAME_1[] = "green_1";
 const char LED_BLUE_NAME_1[] = "blue_1";
 
 bool LED_NEW_VALUES = false;
+bool DO_BME_READING = false;
 
 // HTML
 extern const char INDEX_HTML[];
@@ -40,6 +43,7 @@ ESP8266WiFiMulti WiFiMulti;
 Adafruit_NeoPixel pixels(2, OUTPIN0);
 ESP8266WebServer server(80);
 WebSocketsServer webSocket(81);
+Adafruit_BME680 bme;
 
 void sendCurrentLedColors(uint8_t num)
 {
@@ -97,6 +101,15 @@ void updateLEDs()
     pixels.show();
 }
 
+void doBMEReading()
+{
+    bme.performReading();
+    Serial.print("Temperature = "); Serial.print(bme.temperature); Serial.println(" *C");
+    Serial.print("Pressure = "); Serial.print(bme.pressure / 100.0); Serial.println(" hPa");
+    Serial.print("Humidity = "); Serial.print(bme.humidity); Serial.println(" %");
+    Serial.print("Gas = "); Serial.print(bme.gas_resistance / 1000.0); Serial.println(" KOhms");
+}
+
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length)
 {
     Serial.println();
@@ -135,6 +148,13 @@ void setup()
 #endif
 
     pixels.begin();
+
+    bme.begin();
+    bme.setTemperatureOversampling(BME680_OS_8X);
+    bme.setHumidityOversampling(BME680_OS_2X);
+    bme.setPressureOversampling(BME680_OS_4X);
+    bme.setIIRFilterSize(BME680_FILTER_SIZE_3);
+    bme.setGasHeater(320, 150); // 320*C for 150 ms
 
     Serial.begin(115200);
     // Serial.setDebugOutput(true);
@@ -187,6 +207,12 @@ void loop()
     {
         updateLEDs();
         LED_NEW_VALUES = false;
+    }
+
+    if (DO_BME_READING)
+    {
+        doBMEReading();
+        DO_BME_READING = false;
     }
 
     delay(100);

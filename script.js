@@ -30,7 +30,7 @@ function handleUpdate(evt) {
     element("status").innerHTML = "Refreshed!";
 }
 
-function start() {
+function start_settings() {
     if (window.location.hostname)
     {
         websock = new WebSocket('ws://' + window.location.hostname + ':81/');

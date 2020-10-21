@@ -8,33 +8,23 @@
         <script src="script.js"></script>
     </head>
     <body onload="start();">
-        <h1>NeoPixel LED control</h1>
+        <h1>Air quality</h1>
+        <table>
+            <tr>
+                <td>Temperature</td>
+                <td id="temperature"></td>
+            </tr>
+            <tr>
+                <td>Humidity</td>
+                <td id="humidity"></td>
+            </tr>
+            <tr>
+                <td>Gas</td>
+                <td id="gas"></td>
+            </tr>
+        </table>
         <p>
-            Adjust the color of the
-            <a href="https://www.adafruit.com/product/1938">LED</a> on your own
-            desk! Move the sliders and the LEDs will update automatically.
+            <a href="settings.html">Settings</a>
         </p>
-
-        <form>
-            <span></span>
-            <label>LED 0:</label>
-            <label>LED 1:</label>
-
-            <label>Red:</label>
-            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="red_0" />
-            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="red_1" />
-
-            <label>Green:</label>
-            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="green_0" />
-            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="green_1" />
-
-            <label>Blue:</label>
-            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="blue_0" />
-            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="blue_1" />
-
-            <span id="status">Waiting...</span>
-            <div id="color_0"></div>
-            <div id="color_1"></div>
-        </form>
     </body>
 </html>

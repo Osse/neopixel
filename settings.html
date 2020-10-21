@@ -7,34 +7,68 @@
         <link rel="stylesheet" href="style.css">
         <script src="script.js"></script>
     </head>
-    <body onload="start();">
-        <h1>NeoPixel LED control</h1>
-        <p>
-            Adjust the color of the
-            <a href="https://www.adafruit.com/product/1938">LED</a> on your own
-            desk! Move the sliders and the LEDs will update automatically.
-        </p>
+    <body onload="start_settings();">
+        <h1>Air quality sensor settings</h1>
+
+        <h2>Thresholds</h2>
+
+        <p>Set the threshold values for green, yellow and red colors.</p>
 
         <form>
             <span></span>
-            <label>LED 0:</label>
-            <label>LED 1:</label>
+            <label>Temperature</label>
+            <label>Humidity</label>
+            <label>Gas</label>
+
+            <label>Green</label>
+            <input type="number" value="0" onchange="send(this);" id="temperature_green" />
+            <input type="number" value="0" onchange="send(this);" id="humidity_green" />
+            <input type="number" value="0" onchange="send(this);" id="gas_green" />
+
+            <label>Yellow</label>
+            <input type="number" value="0" onchange="send(this);" id="humidity_yellow" />
+            <input type="number" value="0" onchange="send(this);" id="temperature_yellow" />
+            <input type="number" value="0" onchange="send(this);" id="gas_yellow" />
+
+            <label>Red</label>
+            <input type="number" value="0" onchange="send(this);" id="temperature_red" />
+            <input type="number" value="0" onchange="send(this);" id="humidity_red" />
+            <input type="number" value="0" onchange="send(this);" id="gas_red" />
+
+            <input type="button" value="OK" onchange="send(this);" id="thresholds_submit" />
+        </form>
+
+        <h2>Color settings</h2>
+
+        <p>Adjust what the individual colors look like:</p>
+
+        <form>
+            <span></span>
+            <label>Red</label>
+            <label>Green</label>
+            <label>Blue</label>
 
             <label>Red:</label>
-            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="red_0" />
-            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="red_1" />
+            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="red_red" />
+            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="red_green" />
+            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="red_blue" />
 
             <label>Green:</label>
-            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="green_0" />
-            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="green_1" />
+            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="green_red" />
+            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="green_green" />
+            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="green_blue" />
 
             <label>Blue:</label>
-            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="blue_0" />
-            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="blue_1" />
+            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="blue_red" />
+            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="blue_green" />
+            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="blue_blue" />
 
             <span id="status">Waiting...</span>
-            <div id="color_0"></div>
-            <div id="color_1"></div>
+            <div id="color_red"></div>
+            <div id="color_green"></div>
+            <div id="color_blue"></div>
+
+            <input type="button" value="OK" onchange="send(this);" id="colors_submit" />
         </form>
     </body>
 </html>

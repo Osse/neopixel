@@ -40,16 +40,25 @@ function start_settings() {
     // Array of objects, each with four members: the sliders and the color div
     leds = [
         {
-            red: element("red_0"),
-            green: element("green_0"),
-            blue: element("blue_0"),
-            color: element("color_0")
+            name: "red",
+            red: element(name + ":r"),
+            green: element(name + ":g"),
+            blue: element(name + ":b"),
+            color: element(name + "_color")
         },
         {
-            red: element("red_1"),
-            green: element("green_1"),
-            blue: element("blue_1"),
-            color: element("color_1")
+            name: "green",
+            red: element(name + ":r"),
+            green: element(name + ":g"),
+            blue: element(name + ":b"),
+            color: element(name + "_color")
+        },
+        {
+            name: "blue",
+            red: element(name + ":r"),
+            green: element(name + ":g"),
+            blue: element(name + ":b"),
+            color: element(name + "_color")
         }
     ];
 

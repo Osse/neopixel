@@ -15,7 +15,7 @@ $(BUILD_DIR)/$(SKETCH_NAME).ino.bin: $(SKETCH_NAME).ino
 $(SKETCH_NAME).ino: html.ino
 	touch $(SKETCH_NAME).ino
 
-html.ino: html.ino.in index.html style.css script.js
+html.ino: html.ino.in index.html settings.html style.css script.js
 	sed -e '/^const char INDEX_HTML/r index.html' \
 	    -e '/^const char SETTINGS_HTML/r settings.html' \
 	    -e '/^const char STYLE_CSS/r style.css' \

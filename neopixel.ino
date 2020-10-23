@@ -35,12 +35,43 @@ extern const char SETTINGS_HTML[];
 extern const char STYLE_CSS[];
 extern const char SCRIPT_JS[];
 
+// New LED structure
+struct color
+{
+    uint8_t white;
+    uint8_t red;
+    uint8_t green;
+    uint8_t blue;
+};
+
+union color_union
+{
+    struct color wrgb;
+    uint32_t value;
+};
+
+struct led
+{
+    const char* name;
+    const char* cfg_name;
+    union color_union color;
+};
+
+#define NO_LEDS 3
+
+struct led LEDS[NO_LEDS + 1] = {
+    { .name = "temperature", .cfg_name = "red" },
+    { .name = "humidity",    .cfg_name = "green" },
+    { .name = "gas",         .cfg_name = "blue" },
+    { .name = NULL,          .cfg_name = NULL },
+};
+
 // WiFi details
 #include "wifi_settings.h"
 
 MDNSResponder mdns;
 ESP8266WiFiMulti WiFiMulti;
-Adafruit_NeoPixel pixels(2, OUTPIN0);
+Adafruit_NeoPixel pixels(NO_LEDS, OUTPIN0);
 ESP8266WebServer server(80);
 WebSocketsServer webSocket(81);
 Adafruit_BME680 bme;
@@ -66,28 +97,28 @@ void handleLEDUpdate(uint8_t* payload, size_t length)
     if (colon != NULL)
     {
         size_t pos = colon - payload_char;
-
-        int* led_ptr = NULL;
-        if(!strncmp(payload_char, LED_RED_NAME_0, pos))
-            led_ptr = &LED_RED_0;
-        else if(!strncmp(payload_char, LED_GREEN_NAME_0, pos))
-            led_ptr = &LED_GREEN_0;
-        else if(!strncmp(payload_char, LED_BLUE_NAME_0, pos))
-            led_ptr = &LED_BLUE_0;
-
-        if(!strncmp(payload_char, LED_RED_NAME_1, pos))
-            led_ptr = &LED_RED_1;
-        else if(!strncmp(payload_char, LED_GREEN_NAME_1, pos))
-            led_ptr = &LED_GREEN_1;
-        else if(!strncmp(payload_char, LED_BLUE_NAME_1, pos))
-            led_ptr = &LED_BLUE_1;
-
-        if (led_ptr != NULL)
+        for (led* led = LEDS; led->name; led++)
         {
-            int value = atoi(colon + 1);
-            value = max(0, min(255, value));
-            *led_ptr = value;
-            LED_NEW_VALUES = true;
+            if(!strncmp(payload_char, led->name, pos) || !strncmp(payload_char, led->cfg_name, pos))
+            {
+                char c = *(colon + 1);
+                int value = atoi(colon + 3);
+                value = max(0, min(255, value));
+                switch (c) {
+                case 'r':
+                    led->color.wrgb.red = value;
+                    break;
+                case 'g':
+                    led->color.wrgb.green = value;
+                    break;
+                case 'b':
+                    led->color.wrgb.blue = value;
+                    break;
+                default:
+                    break;
+                }
+                LED_NEW_VALUES = true;
+            }
         }
     }
 }
@@ -96,8 +127,8 @@ void updateLEDs()
 {
     // LED_RED and LED_GREEN are intentionally in the wrong order.
     // Not entirely sure why that is the case.
-    pixels.setPixelColor(0, pixels.Color(LED_GREEN_0, LED_RED_0, LED_BLUE_0));
-    pixels.setPixelColor(1, pixels.Color(LED_GREEN_1, LED_RED_1, LED_BLUE_1));
+    for (int i = 0; i < 3; i++)
+        pixels.setPixelColor(i, pixels.Color(LEDS[i].color.wrgb.green, LEDS[i].color.wrgb.red, LEDS[i].color.wrgb.blue));
     pixels.show();
 }
 
@@ -192,10 +223,7 @@ void setup()
     webSocket.onEvent(webSocketEvent);
 
     // LED is off by default
-    auto black = pixels.Color(0, 0, 0);
-    pixels.setPixelColor(0, black);
-    pixels.setPixelColor(1, black);
-    pixels.show();
+    updateLEDs();
 }
 
 void loop()
@@ -215,5 +243,6 @@ void loop()
         DO_BME_READING = false;
     }
 
+    yield();
     delay(100);
 }

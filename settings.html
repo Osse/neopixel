@@ -23,7 +23,7 @@
             <label>Green</label>
             <input type="number" value="0" onchange="send(this);" id="temperature_green" />
             <input type="number" value="0" onchange="send(this);" id="humidity_green" />
-            <input type="number" value="0" onchange="send(this);" id="gas_green" />
+            <input type="number" value="0" onchange="send(this);" id="gas_greeb" />
 
             <label>Yellow</label>
             <input type="number" value="0" onchange="send(this);" id="humidity_yellow" />
@@ -45,23 +45,23 @@
         <form>
             <span></span>
             <label>Red</label>
+            <label>Yellow</label>
             <label>Green</label>
-            <label>Blue</label>
 
             <label>Red:</label>
-            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="red_red" />
-            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="red_green" />
-            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="red_blue" />
+            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="red:r" />
+            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="red:y" />
+            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="red:g" />
 
             <label>Green:</label>
-            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="green_red" />
-            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="green_green" />
-            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="green_blue" />
+            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="green:r" />
+            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="green:y" />
+            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="green:g" />
 
             <label>Blue:</label>
-            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="blue_red" />
-            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="blue_green" />
-            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="blue_blue" />
+            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="blue:r" />
+            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="blue:y" />
+            <input type="range" min="0" max="255" step="1" value="0" onchange="send(this);" id="blue:g" />
 
             <span id="status">Waiting...</span>
             <div id="color_red"></div>

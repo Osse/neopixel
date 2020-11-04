@@ -30,6 +30,9 @@ function handleUpdate(evt) {
     element("status").innerHTML = "Refreshed!";
 }
 
+function start_index() {
+}
+
 function start_settings() {
     if (window.location.hostname)
     {

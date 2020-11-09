@@ -26,8 +26,16 @@ const char LED_RED_NAME_1[] = "red_1";
 const char LED_GREEN_NAME_1[] = "green_1";
 const char LED_BLUE_NAME_1[] = "blue_1";
 
+struct settings_page_status
+{
+    bool open;
+    unsigned long when;
+};
+
+// Global state and flags
 bool LED_NEW_VALUES = false;
 bool DO_BME_READING = false;
+struct settings_page_status SETTINGS_PAGE_STATUS = { .open = false, .when = 0  };
 
 // HTML
 extern const char INDEX_HTML[];
@@ -153,6 +161,8 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
         case WStype_CONNECTED: {
             sendCurrentLedColors(num);
             IPAddress ip = webSocket.remoteIP(num);
+            SETTINGS_PAGE_STATUS.when = millis();
+            SETTINGS_PAGE_STATUS.open = true;
             Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\r\n", num, ip[0], ip[1], ip[2], ip[3], payload);
             break;
         }
